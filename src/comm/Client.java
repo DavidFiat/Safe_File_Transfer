@@ -12,9 +12,9 @@ import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Scanner;
 
 
 public class Client {
@@ -23,9 +23,12 @@ public class Client {
         // TODO Auto-generated method stub
 
         try {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingresa el path del archivo a enviar por favor");
+       // String path = scanner.nextLine();
 
             //Pedir el path del archivo
-            String path = "D:\\Documents\\Octavo Semestre\\Ciberseguridad\\Workspace\\Mensaje.txt";
+            String path = "data\\M.JPG";
             File file = new File(path);
 //            String ab = file.getAbsolutePath();
 //            FileInputStream fis = new FileInputStream(file);

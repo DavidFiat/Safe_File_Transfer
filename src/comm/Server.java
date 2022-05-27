@@ -7,7 +7,6 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
 import java.security.*;
 
 public class Server {
@@ -31,7 +30,7 @@ public class Server {
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
 
-
+/*
             //Grabamos la clave pública a un archivo
             try (FileOutputStream fos = new FileOutputStream("publicKey")) {
                 fos.write(publicKey.getEncoded());
@@ -40,6 +39,7 @@ public class Server {
             try (FileOutputStream fos = new FileOutputStream("privateKey")) {
                 fos.write(privateKey.getEncoded());
             }
+            */
 
             //Mandamos la clave publica al cliente
             OutputStream os = socket.getOutputStream();
@@ -56,7 +56,7 @@ public class Server {
             decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
             byte[] decryptedFileBytes = decryptCipher.doFinal(encryptedFileBytes);
 
-            String recievedPath = "D:\\Documents\\Octavo Semestre\\Recibidos\\Mensaje";
+            String recievedPath = "data\\Message";
             try (FileOutputStream fos = new FileOutputStream(recievedPath)) {
                 fos.write(decryptedFileBytes);
                 System.out.println("EXITO");
