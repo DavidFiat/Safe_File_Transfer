@@ -43,8 +43,9 @@ public class Server {
             //Mandamos la clave publica al cliente
 
             Gson gson = new Gson();
-//            String json = gson.toJson(publicKey.getEncoded());
-            String json = gson.toJson(publicKey);
+
+            String json = gson.toJson(publicKey.getEncoded());
+            //String json = gson.toJson(publicKey);
             bw.write(json+"\n");
             bw.flush();
 //            DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());

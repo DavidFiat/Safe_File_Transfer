@@ -61,19 +61,22 @@ public class Client {
             Gson gson = new Gson();
 
 
-            PublicKey publicKey = gson.fromJson(json, PublicKey.class);
 
-//            DataInputStream dIn = new DataInputStream(socket.getInputStream());
-//            int length = dIn.readInt();                    // read length of incoming message
-//            byte[] publicKeyBytes = new byte[length];
-//            dIn.readFully(publicKeyBytes, 0, publicKeyBytes.length); // read the message
+            byte[] publicKeyBytes = gson.fromJson(json, byte[].class);
+
+
+      //      DataInputStream dIn = new DataInputStream(socket.getInputStream());
+    //        int length = dIn.readInt();                    // read length of incoming message
+  //          byte[] publicKeyBytes = new byte[length];
+    //        dIn.readFully(publicKeyBytes, 0, publicKeyBytes.length); // read the message
 
             System.out.println("Lo recibo");
 
             //Recuperamos la instancia de la clave publica
-//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-//            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-//            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            System.out.println(publicKey);
 
             //Ciframos la informacion del archivo
             byte[] fileBytes = Files.readAllBytes(Path.of(file.getPath()));
@@ -81,6 +84,7 @@ public class Client {
             Cipher encryptCipher = Cipher.getInstance("RSA");
             encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] encryptedFileBytes = encryptCipher.doFinal(fileBytes);
+
 
             //Mandamos el archivo cifrado
             FileOutputStream stream = new FileOutputStream("EncryptedFile");
@@ -97,6 +101,8 @@ public class Client {
         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
         }
     }
 }
