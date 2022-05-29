@@ -1,6 +1,8 @@
 package comm;
 
 import com.google.gson.Gson;
+import model.EncryptedFile;
+import model.Key;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.*;
 
+
 public class Server {
 
     public static void main(String[] args) {
@@ -19,9 +22,9 @@ public class Server {
         try {
 
             ServerSocket server = new ServerSocket(5000);
-
             System.out.println("Esperando conexion");
             Socket socket = server.accept();
+
             OutputStream os = socket.getOutputStream();
             InputStream is = socket.getInputStream();
 
@@ -36,44 +39,39 @@ public class Server {
             keyPairGenerator.initialize(1024);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
+            //El par de claves RSA
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
 
 
             //Mandamos la clave publica al cliente
-
             Gson gson = new Gson();
-//            String json = gson.toJson(publicKey.getEncoded());
-            String json = gson.toJson(publicKey);
+            Key key = new Key(publicKey.getEncoded());
+            String json = gson.toJson(key);
             bw.write(json+"\n");
             bw.flush();
-//            DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
-//            dOut.writeInt(json.length()); // write length of the message
-//            dOut.write(publicKey.getEncoded());           // write the message
-
 
             //Obtenemos la informacion del archivo
-            byte[] encryptedFileBytes = is.readAllBytes();
+            String json2 = br.readLine();
+            EncryptedFile ef = gson.fromJson(json2, EncryptedFile.class);
+            byte[] encryptedFileBytes = ef.getInfo();
+
 
             //Usamos Cipher para descifrar el archivo
             Cipher decryptCipher = Cipher.getInstance("RSA");
             decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
             byte[] decryptedFileBytes = decryptCipher.doFinal(encryptedFileBytes);
 
-            String recievedPath = "data\\Message";
+            //Guardamos el archivo recibido
+            String recievedPath = "DataReceived\\DecryptedFile";
             try (FileOutputStream fos = new FileOutputStream(recievedPath)) {
                 fos.write(decryptedFileBytes);
                 System.out.println("EXITO");
             }
 
-            os.close();
-//            System.out.println("Publica: "+ publicKey);
-//            System.out.println("Privada: "+ privateKey);
 
-//            while(true) {}
 
         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

@@ -1,6 +1,8 @@
 package comm;
 
 import com.google.gson.Gson;
+import model.EncryptedFile;
+import model.Key;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -9,7 +11,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -26,23 +28,26 @@ public class Client {
 
         try {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Ingresa el path del archivo a enviar por favor");
-       // String path = scanner.nextLine();
+        System.out.println("Ingresa el nombre del archivo a enviar por favor:");
 
-            //Pedir el path del archivo
-            String path = "data\\M.JPG";
+            //Pedir el name para el path del archivo
+            String name = scanner.nextLine();
+            String path = "DataToSend\\"+name;
             File file = new File(path);
+            FileWriter fw = new FileWriter(file);
 
+            //Pedir el contenido del archivo
+            System.out.println("Escribe el contenido:");
+            String content = scanner.nextLine();
+            fw.write(content);
+            fw.close();
 
             //Empezando la conexion TCP
             System.out.println("Enviando solicitud...");
 
             //Socket es la puerta de conexion o comunicacion
-            //Para conectarme conmigo mismo
             Socket socket = new Socket("127.0.0.1", 5000);
 
-            //Para conectarse con conmpañeros y profesor ngrok
-            //Socket socket = new Socket("0.tcp.ngrok.io", 10828);
 
             System.out.println("Conectados");
 
@@ -53,48 +58,35 @@ public class Client {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 
-            System.out.println("HOLA");
             //Recibimos la clave publica
-            //Necesitamos cambiar esto para leer solo los Bytes de la clave
-
             String json = br.readLine();
             Gson gson = new Gson();
+            Key key = gson.fromJson(json, Key.class);
+            byte[] publicKeyBytes = key.getPublickeybytes();
 
-
-            PublicKey publicKey = gson.fromJson(json, PublicKey.class);
-
-//            DataInputStream dIn = new DataInputStream(socket.getInputStream());
-//            int length = dIn.readInt();                    // read length of incoming message
-//            byte[] publicKeyBytes = new byte[length];
-//            dIn.readFully(publicKeyBytes, 0, publicKeyBytes.length); // read the message
 
             System.out.println("Lo recibo");
 
             //Recuperamos la instancia de la clave publica
-//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-//            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-//            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
             //Ciframos la informacion del archivo
-            byte[] fileBytes = Files.readAllBytes(Path.of(file.getPath()));
-
+            byte[] fileBytes = Files.readAllBytes(Paths.get(path));
+            System.out.println(fileBytes.length);
             Cipher encryptCipher = Cipher.getInstance("RSA");
             encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] encryptedFileBytes = encryptCipher.doFinal(fileBytes);
 
             //Mandamos el archivo cifrado
-            FileOutputStream stream = new FileOutputStream("EncryptedFile");
-            stream.write(encryptedFileBytes);
-            os.write(encryptedFileBytes);
+            EncryptedFile ef = new EncryptedFile(encryptedFileBytes);
+            String json2 = gson.toJson(ef);
+            bw.write(json2+"\n");
+            bw.flush();
 
 
-            is.close();
-            stream.close();
-
-
-
-
-        } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+        } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidKeySpecException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
