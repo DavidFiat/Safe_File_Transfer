@@ -51,11 +51,11 @@ public class Server {
             bw.write(json+"\n");
             bw.flush();
 
-            //Obtenemos la informacion del archivo
+            //Obtenemos la informacion del archivo (Contenido y SHA-256
             String json2 = br.readLine();
             EncryptedFile ef = gson.fromJson(json2, EncryptedFile.class);
             byte[] encryptedFileBytes = ef.getInfo();
-
+            String clientSHA = ef.getSHA256();
 
             //Usamos Cipher para descifrar el archivo
             Cipher decryptCipher = Cipher.getInstance("RSA");
@@ -69,10 +69,52 @@ public class Server {
                 System.out.println("EXITO");
             }
 
+            //Calculamos el SHA-256 del archivo que ciframos
+            //Usamos el algoritmo SHA-1
+            MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+            //SHA-1 checksum
+            String shaChecksum = getFileChecksum(shaDigest, new File(recievedPath));
+            System.out.println("SHA-256: "+shaChecksum);
+
+            //Comprobamos si el SHA-256 enviado por el cliente y el calculado son iguales
+            if(clientSHA.equals(shaChecksum)){
+                System.out.println("El archivo fue transferido adecuadamente");
+            }
 
 
         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
         }
+    }
+    private static String getFileChecksum(MessageDigest digest, File file) throws IOException
+    {
+        //Get file input stream for reading the file content
+        FileInputStream fis = new FileInputStream(file);
+
+        //Create byte array to read data in chunks
+        byte[] byteArray = new byte[1024];
+        int bytesCount = 0;
+
+        //Read file data and update in message digest
+        while ((bytesCount = fis.read(byteArray)) != -1) {
+            digest.update(byteArray, 0, bytesCount);
+        };
+
+        //close the stream; We don't need it now.
+        fis.close();
+
+        //Get the hash's bytes
+        byte[] bytes = digest.digest();
+
+        //This bytes[] has bytes in decimal format;
+        //Convert it to hexadecimal format
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i< bytes.length ;i++)
+        {
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        //return complete hash
+        return sb.toString();
     }
 }

@@ -12,10 +12,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Scanner;
@@ -79,16 +76,53 @@ public class Client {
             encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] encryptedFileBytes = encryptCipher.doFinal(fileBytes);
 
-            //Mandamos el archivo cifrado
-            EncryptedFile ef = new EncryptedFile(encryptedFileBytes);
+            //Calculamos el SHA-256 del archivo que ciframos
+            //Usamos el algoritmo SHA-1
+            MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+            //SHA-1 checksum
+            String shaChecksum = getFileChecksum(shaDigest, file);
+            System.out.println("SHA-256: "+shaChecksum);
+
+            //Mandamos el archivo cifrado junto con su hash SHA-256
+            EncryptedFile ef = new EncryptedFile(encryptedFileBytes,shaChecksum);
             String json2 = gson.toJson(ef);
             bw.write(json2+"\n");
             bw.flush();
-
 
         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidKeySpecException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    private static String getFileChecksum(MessageDigest digest, File file) throws IOException
+    {
+        //Get file input stream for reading the file content
+        FileInputStream fis = new FileInputStream(file);
+
+        //Create byte array to read data in chunks
+        byte[] byteArray = new byte[1024];
+        int bytesCount = 0;
+
+        //Read file data and update in message digest
+        while ((bytesCount = fis.read(byteArray)) != -1) {
+            digest.update(byteArray, 0, bytesCount);
+        };
+
+        //close the stream; We don't need it now.
+        fis.close();
+
+        //Get the hash's bytes
+        byte[] bytes = digest.digest();
+
+        //This bytes[] has bytes in decimal format;
+        //Convert it to hexadecimal format
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i< bytes.length ;i++)
+        {
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        //return complete hash
+        return sb.toString();
     }
 }
