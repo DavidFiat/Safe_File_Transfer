@@ -1,5 +1,7 @@
 package comm;
 
+import com.google.gson.Gson;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -23,6 +25,9 @@ public class Server {
             OutputStream os = socket.getOutputStream();
             InputStream is = socket.getInputStream();
 
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
 
             System.out.println("Conectado");
 
@@ -34,21 +39,18 @@ public class Server {
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
 
-/*
-            //Grabamos la clave pública a un archivo
-            try (FileOutputStream fos = new FileOutputStream("publicKey")) {
-                fos.write(publicKey.getEncoded());
-            }
-            //Grabamos la clave privada a un archivo
-            try (FileOutputStream fos = new FileOutputStream("privateKey")) {
-                fos.write(privateKey.getEncoded());
-            }
-            */
 
             //Mandamos la clave publica al cliente
-            os.write(publicKey.getEncoded());
-            System.out.println("Lo mando");
-            os.flush();
+
+            Gson gson = new Gson();
+//            String json = gson.toJson(publicKey.getEncoded());
+            String json = gson.toJson(publicKey);
+            bw.write(json+"\n");
+            bw.flush();
+//            DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+//            dOut.writeInt(json.length()); // write length of the message
+//            dOut.write(publicKey.getEncoded());           // write the message
+
 
             //Obtenemos la informacion del archivo
             byte[] encryptedFileBytes = is.readAllBytes();
