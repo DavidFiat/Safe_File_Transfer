@@ -20,6 +20,10 @@ public class Server {
 
             System.out.println("Esperando conexion");
             Socket socket = server.accept();
+            OutputStream os = socket.getOutputStream();
+            InputStream is = socket.getInputStream();
+
+
             System.out.println("Conectado");
 
             //Con esto generamos el par de claves RSA
@@ -42,13 +46,11 @@ public class Server {
             */
 
             //Mandamos la clave publica al cliente
-            OutputStream os = socket.getOutputStream();
             os.write(publicKey.getEncoded());
             System.out.println("Lo mando");
             os.flush();
 
             //Obtenemos la informacion del archivo
-            InputStream is = socket.getInputStream();
             byte[] encryptedFileBytes = is.readAllBytes();
 
             //Usamos Cipher para descifrar el archivo

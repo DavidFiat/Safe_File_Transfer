@@ -44,10 +44,12 @@ public class Client {
             //Socket socket = new Socket("0.tcp.ngrok.io", 10828);
 
             System.out.println("Conectados");
+            OutputStream os = socket.getOutputStream();
+            InputStream is = socket.getInputStream();
+
 
             System.out.println("HOLA");
             //Recibimos la clave publica
-            InputStream is = socket.getInputStream();
             //Necesitamos cambiar esto para leer solo los Bytes de la clave
             byte[] publicKeyBytes = is.readAllBytes();
             System.out.println("Lo recibo");
@@ -67,7 +69,6 @@ public class Client {
             //Mandamos el archivo cifrado
             FileOutputStream stream = new FileOutputStream("EncryptedFile");
             stream.write(encryptedFileBytes);
-            OutputStream os = socket.getOutputStream();
             os.write(encryptedFileBytes);
 
 
