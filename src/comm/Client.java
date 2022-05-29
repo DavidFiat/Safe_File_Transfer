@@ -61,7 +61,7 @@ public class Client {
             Gson gson = new Gson();
 
 
-            PublicKey publicKey = (PublicKey) gson.fromJson(json);
+            PublicKey publicKey = gson.fromJson(json, PublicKey.class);
 
 //            DataInputStream dIn = new DataInputStream(socket.getInputStream());
 //            int length = dIn.readInt();                    // read length of incoming message
@@ -71,9 +71,9 @@ public class Client {
             System.out.println("Lo recibo");
 
             //Recuperamos la instancia de la clave publica
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+//            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+//            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
             //Ciframos la informacion del archivo
             byte[] fileBytes = Files.readAllBytes(Path.of(file.getPath()));
@@ -94,7 +94,7 @@ public class Client {
 
 
 
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+        } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
