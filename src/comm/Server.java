@@ -13,9 +13,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.*;
 
-
+/**
+ * Server Class
+ * @author Mateo Loaiza
+ * @author David Fiat
+ */
 public class Server {
 
+    /**
+     * This main method will be in charge of the TCP connection, the keys generation and
+     * @param args string array
+     */
     public static void main(String[] args) {
         // TODO Auto-generated method stub
 
@@ -63,8 +71,8 @@ public class Server {
             byte[] decryptedFileBytes = decryptCipher.doFinal(encryptedFileBytes);
 
             //Guardamos el archivo recibido
-            String recievedPath = "DataReceived\\DecryptedFile";
-            try (FileOutputStream fos = new FileOutputStream(recievedPath)) {
+            String receivedPath = "DataReceived\\DecryptedFile";
+            try (FileOutputStream fos = new FileOutputStream(receivedPath)) {
                 fos.write(decryptedFileBytes);
                 System.out.println("EXITO");
             }
@@ -73,7 +81,7 @@ public class Server {
             //Usamos el algoritmo SHA-1
             MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
             //SHA-1 checksum
-            String shaChecksum = getFileChecksum(shaDigest, new File(recievedPath));
+            String shaChecksum = getFileChecksum(shaDigest, new File(receivedPath));
             System.out.println("SHA-256: "+shaChecksum);
 
             //Comprobamos si el SHA-256 enviado por el cliente y el calculado son iguales
@@ -86,8 +94,17 @@ public class Server {
             e.printStackTrace();
         }
     }
-    private static String getFileChecksum(MessageDigest digest, File file) throws IOException
-    {
+
+    /**
+     * This method calculates the hash from the corresponding file
+     * {@link <a href="https://howtodoinjava.com/java/java-security/sha-md5-file-checksum-hash/">...</a>}
+     * @author Lokesh Gupta
+     * @param digest the MessageDigest which will be used
+     * @param file the File which we will get the hash from
+     * @return string
+     * @throws IOException exception thrown in case any I/O operation failed or was interrupted
+     */
+    private static String getFileChecksum(MessageDigest digest, File file) throws IOException {
         //Get file input stream for reading the file content
         FileInputStream fis = new FileInputStream(file);
 

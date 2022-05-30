@@ -1,36 +1,34 @@
 package model;
 
-import java.security.PublicKey;
-
+/**
+ * Key Class
+ * @author Mateo Loaiza
+ * @author David Fiat
+ */
 public class Key {
 
-    private byte[] publickeybytes;
-    private PublicKey publicKey;
+    private byte[] publicKeyBytes;
 
+    /**
+     * Empty constructor of the class Key
+     */
     public Key() {
     }
 
-    public Key(PublicKey publicKey) {
-        this.publicKey = publicKey;
+    /**
+     * Constructor with parameters of the class Key
+     * @param publicKeyBytes array containing the bytes of the public key
+     */
+    public Key(byte[] publicKeyBytes) {
+        this.publicKeyBytes = publicKeyBytes;
     }
 
-    public Key(byte[] publickeybytes) {
-        this.publickeybytes = publickeybytes;
+    /**
+     * This is the get method for the attribute publicKeyBytes
+     * @return the array containing the bytes of the public key
+     */
+    public byte[] getPublicKeyBytes() {
+        return publicKeyBytes;
     }
 
-    public PublicKey getPublicKey() {
-        return publicKey;
-    }
-
-    public void setPublicKey(PublicKey publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    public byte[] getPublickeybytes() {
-        return publickeybytes;
-    }
-
-    public void setPublickeybytes(byte[] publickeybytes) {
-        this.publickeybytes = publickeybytes;
-    }
 }

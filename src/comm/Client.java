@@ -17,7 +17,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Scanner;
 
-
+/**
+ * Client Class
+ * @author Mateo Loaiza
+ * @author David Fiat
+ */
 public class Client {
 
     public static void main(String[] args) {
@@ -59,7 +63,7 @@ public class Client {
             String json = br.readLine();
             Gson gson = new Gson();
             Key key = gson.fromJson(json, Key.class);
-            byte[] publicKeyBytes = key.getPublickeybytes();
+            byte[] publicKeyBytes = key.getPublicKeyBytes();
 
 
             System.out.println("Lo recibo");
@@ -94,6 +98,15 @@ public class Client {
             e.printStackTrace();
         }
     }
+    /**
+     * This method calculates the hash from the corresponding file
+     * {@link <a href="https://howtodoinjava.com/java/java-security/sha-md5-file-checksum-hash/">...</a>}
+     * @author Lokesh Gupta
+     * @param digest the MessageDigest which will be used
+     * @param file the File which we will get the hash from
+     * @return string
+     * @throws IOException exception thrown in case any I/O operation failed or was interrupted
+     */
     private static String getFileChecksum(MessageDigest digest, File file) throws IOException
     {
         //Get file input stream for reading the file content
