@@ -1,11 +1,13 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * EncryptedFile Class
  * @author Mateo Loaiza
  * @author David Fiat
  */
-public class EncryptedFile {
+public class EncryptedFile implements Serializable {
 
     private byte[] info;
     private String SHA256;

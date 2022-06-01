@@ -2,7 +2,6 @@ package comm;
 
 import com.google.gson.Gson;
 import model.EncryptedFile;
-import model.Key;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -39,7 +38,6 @@ public class Server {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-
             System.out.println("Conectado");
 
             //Con esto generamos el par de claves RSA
@@ -51,15 +49,13 @@ public class Server {
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
 
-
             //Mandamos la clave publica al cliente
             Gson gson = new Gson();
-            Key key = new Key(publicKey.getEncoded());
-            String json = gson.toJson(key);
+            String json = gson.toJson(publicKey.getEncoded());
             bw.write(json+"\n");
             bw.flush();
 
-            //Obtenemos la informacion del archivo (Contenido y SHA-256
+            //Obtenemos la informacion del archivo (Contenido y SHA-256)
             String json2 = br.readLine();
             EncryptedFile ef = gson.fromJson(json2, EncryptedFile.class);
             byte[] encryptedFileBytes = ef.getInfo();
@@ -74,13 +70,12 @@ public class Server {
             String receivedPath = "DataReceived\\DecryptedFile";
             try (FileOutputStream fos = new FileOutputStream(receivedPath)) {
                 fos.write(decryptedFileBytes);
-                System.out.println("EXITO");
             }
 
             //Calculamos el SHA-256 del archivo que ciframos
-            //Usamos el algoritmo SHA-1
+            //Usamos el algoritmo SHA-256
             MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
-            //SHA-1 checksum
+            //SHA-256 checksum
             String shaChecksum = getFileChecksum(shaDigest, new File(receivedPath));
             System.out.println("SHA-256: "+shaChecksum);
 

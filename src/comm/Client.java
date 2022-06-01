@@ -2,7 +2,6 @@ package comm;
 
 import com.google.gson.Gson;
 import model.EncryptedFile;
-import model.Key;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -49,7 +48,6 @@ public class Client {
             //Socket es la puerta de conexion o comunicacion
             Socket socket = new Socket("127.0.0.1", 5000);
 
-
             System.out.println("Conectados");
 
             OutputStream os = socket.getOutputStream();
@@ -58,15 +56,10 @@ public class Client {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-
             //Recibimos la clave publica
             String json = br.readLine();
             Gson gson = new Gson();
-            Key key = gson.fromJson(json, Key.class);
-            byte[] publicKeyBytes = key.getPublicKeyBytes();
-
-
-            System.out.println("Lo recibo");
+            byte[] publicKeyBytes = gson.fromJson(json, byte[].class);
 
             //Recuperamos la instancia de la clave publica
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -75,7 +68,6 @@ public class Client {
 
             //Ciframos la informacion del archivo
             byte[] fileBytes = Files.readAllBytes(Paths.get(path));
-            System.out.println(fileBytes.length);
             Cipher encryptCipher = Cipher.getInstance("RSA");
             encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] encryptedFileBytes = encryptCipher.doFinal(fileBytes);
