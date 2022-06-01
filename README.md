@@ -170,7 +170,7 @@ Con esta modificación, se podía realizar la escritura y lectura con los métod
 
 
 
-Se crea un Gson, se envía de forma codificada, o sea en bytes la llave pública. Y se transforma a un String a través de gson.ToJson(key).
+Se crea un Gson, se envía de forma codificada, o sea en bytes la llave pública. Y se transforma a un String a través de gson.ToJson(publicKey.getEncoded()).
 Se escribe con bw.write(), y se envía al cliente con bw.flush(), no se usa bw.close() porque puede ser utilizado posteriormente.
 ```
 Gson gson = new Gson();
@@ -222,7 +222,7 @@ javax.crypto.IllegalBlockSizeException: Data must not be longer than 256 bytes
 ```
 Para resolver esto, encontramos 2 soluciones gracias a la investigación. 
 
-La primera solución es cifrar el archivo con una llave simétrica, luego encriptar dicha llave con la llave pública RSA. Luego, enviar la llave pública, la llave simétrica cifrada y el archivo. Finalmente, descifrar con RSA la llave simétrica y con esta llave descifrar el archivo.
+La primera solución es cifrar el archivo con una llave simétrica, luego encriptar dicha llave con la llave RSA. Luego, enviar la llave pública, la llave simétrica cifrada y el archivo. Finalmente, descifrar con RSA la llave simétrica y con esta llave descifrar el archivo.
 
 La seguna solución era aumentar el tamaño de la llave RSA. No obstante, por más que lo aumentaramos, solo ibamos a hacer el programa menos eficiente y el aumento en bytes que podíamos cifrar no era suficiente.
 
