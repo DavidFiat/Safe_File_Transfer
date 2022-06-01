@@ -22,7 +22,10 @@ import java.util.Scanner;
  * @author David Fiat
  */
 public class Client {
-
+    /**
+     * This is the main method
+     * @param args string array
+     */
     public static void main(String[] args) {
         // TODO Auto-generated method stub
 

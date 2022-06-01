@@ -20,7 +20,7 @@ import java.security.*;
 public class Server {
 
     /**
-     * This main method will be in charge of the TCP connection, the keys generation and
+     * This is the main method
      * @param args string array
      */
     public static void main(String[] args) {
