@@ -165,7 +165,7 @@ BufferedReader br = new BufferedReader(new InputStreamReader(is));
 ```
 
 
-Con esta modificación, se podía realizar la escritura y lectura con los métodos bw.write() para escritura y br.read() o br.readLine() para lectura. Sin embargo, el formato de la llave pública sigue generando pequeños errores al realizar el envío. Por lo tanto, primero se define que vamos a enviar la clave pública en un arreglo de byte y será enviado serializando el arreglo a través de Json en una cadena de texto *String*
+Con esta modificación, se podía realizar la escritura y lectura con los métodos bw.write() para escritura y br.read() o br.readLine() para lectura. Sin embargo, decidimos utilizar un formato Json, que permite el envío de los bytes de forma más eficiente. Se define que vamos a enviar la clave pública en un arreglo de byte y será enviado serializando el arreglo a través de Json en una cadena de texto *String*
 
 
 
